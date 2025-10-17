@@ -28,6 +28,24 @@ void clearBoard(char board[3][3]) {
     }
 }
 
+// Validate input
+int getValidInput(string prompt, int min, int max) {
+    int number;
+    cout << prompt;
+
+    // Loop until valid input reached
+    while (true) {
+        if (cin >> number && number >= min && number <= max) {
+            cin.ignore(10000, '\n'); 
+            return number; 
+        } else {
+            cout << "Invalid input. Enter a number between " << min << " and " << max << ": ";
+            cin.clear(); 
+            cin.ignore(100000, '\n'); 
+        }
+    }
+}
+
 // Make move on board based on players input. 
 bool makeMove(char board[3][3], int row, int col, char player) {
     if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') {
@@ -78,10 +96,12 @@ int main() {
         displayBoard(board);
 
         int row, col;
-        // Get input
-        cout << "Player " << currentPlayer << ", enter your move (row and column: 1-3): ";
-        cin >> row >> col;
-        row--; col--; // Adjust for 0 indexing
+        // Get valid input
+        cout << "Player " << currentPlayer << " its your turn!\n";
+        row = getValidInput("Enter row (1-3): ", 1, 3) - 1;
+        col = getValidInput("Enter column (1-3): ", 1, 3) - 1;
+        
+
 
         // Ensure input is within 3x3 cell
         if (!makeMove(board, row, col, currentPlayer)) {
