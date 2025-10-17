@@ -18,6 +18,16 @@ void displayBoard(char board[3][3]) {
     cout << "\n";
 }
 
+// Clear board
+void clearBoard(char board[3][3]) {
+    for (int i = 0; i < 3; ++i) {
+        // Clear each row
+        board[0][i] = ' ';
+        board[1][i] = ' ';
+        board[2][i] = ' ';
+    }
+}
+
 // Make move on board based on players input. 
 bool makeMove(char board[3][3], int row, int col, char player) {
     if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') {
@@ -57,15 +67,16 @@ bool isDraw(char board[3][3]) {
 int main() {
     char board[3][3] = { {' ',' ',' '},{' ',' ',' '},{' ',' ',' '}}; // Create board
     char currentPlayer = 'X';
-    bool gameOver = false;
+    bool playAgain = true;
+    string response;
 
     cout << "-*-*-*- Tic Tac Toe -*-*-*-\n";
 
-    // Show initial board
-    displayBoard(board);
+    while (playAgain) {
 
-    // Main game loop
-    while (!gameOver) {
+        // Show board
+        displayBoard(board);
+
         int row, col;
         // Get input
         cout << "Player " << currentPlayer << ", enter your move (row and column: 1-3): ";
@@ -78,15 +89,22 @@ int main() {
             continue;
         }
 
-        // Update board
-        displayBoard(board);
-
-        if (checkWin(board, currentPlayer)) {
+        if (checkWin(board, currentPlayer)) { // Player wins
+            displayBoard(board);
             cout << "Player " << currentPlayer << " wins!\n";
-            gameOver = true; // end game
+            cout << "Would you like to play again(y/n)?";
+            cin >> response;
+            if (response != "y" && response != "Y") {
+                playAgain = false; // quit game
+            } else {clearBoard(board);} // clear board if player wants to play again
         } else if (isDraw(board)){
-            cout << "It's a draw!\n";
-            gameOver = true; // end game
+            displayBoard(board);
+            cout << "Its a draw!";
+            cout << "Would you like to play again(y/n)?";
+            cin >> response;
+            if (response != "y" && response != "Y") {
+                playAgain = false; // quit game
+            } else { clearBoard(board);} // clear board if player wants to play again
         } else {
             currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // Switch players
         }
