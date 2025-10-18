@@ -82,26 +82,39 @@ bool isDraw(char board[3][3]) {
     return true;
 }
 
-int main() {
-    char board[3][3] = { {' ',' ',' '},{' ',' ',' '},{' ',' ',' '}}; // Create board
-    char currentPlayer = 'X';
-    bool playAgain = true;
+// Ask user to play again
+bool askPlayAgain() {
     string response;
+    cout << "\nWould you like to play again (y/n)?";
+    cin >> response;
+    return (response == "y" || response == "Y");
+}
+
+// Display win count
+void displayScore(int xWins, int oWins) {
+    cout << "\nWin count:";
+    cout << "\nPlayer X: " << xWins;
+    cout << "\nPlayer O: " << oWins << "\n";
+}
+
+// Play a game / round
+void playGame(int &xWins, int &oWins) {
+    char board[3][3];
+    clearBoard(board);
+
+    char currentPlayer = 'X';
+    bool gameOver = false;
+    int xTurns = 0, oTurns = 0;
 
     cout << "-*-*-*- Tic Tac Toe -*-*-*-\n";
+    displayBoard(board);
 
-    while (playAgain) {
+    while (!gameOver) {
+        cout << "Player " << currentPlayer << "'s turn.\n";
 
-        // Show board
-        displayBoard(board);
-
-        int row, col;
         // Get valid input
-        cout << "Player " << currentPlayer << " its your turn!\n";
-        row = getValidInput("Enter row (1-3): ", 1, 3) - 1;
-        col = getValidInput("Enter column (1-3): ", 1, 3) - 1;
-        
-
+        int row = getValidInput("Enter row (1-3): ", 1, 3) - 1;
+        int col = getValidInput("Enter column (1-3): ", 1, 3) - 1;
 
         // Ensure input is within 3x3 cell
         if (!makeMove(board, row, col, currentPlayer)) {
@@ -109,25 +122,37 @@ int main() {
             continue;
         }
 
-        if (checkWin(board, currentPlayer)) { // Player wins
-            displayBoard(board);
-            cout << "Player " << currentPlayer << " wins!\n";
-            cout << "Would you like to play again(y/n)?";
-            cin >> response;
-            if (response != "y" && response != "Y") {
-                playAgain = false; // quit game
-            } else {clearBoard(board);} // clear board if player wants to play again
-        } else if (isDraw(board)){
-            displayBoard(board);
-            cout << "Its a draw!";
-            cout << "Would you like to play again(y/n)?";
-            cin >> response;
-            if (response != "y" && response != "Y") {
-                playAgain = false; // quit game
-            } else { clearBoard(board);} // clear board if player wants to play again
+        displayBoard(board);
+        if (currentPlayer == 'X') xTurns++; else oTurns++; // Increment turns
+
+        if (checkWin(board, currentPlayer)) {
+            cout << "Player " << currentPlayer << " wins in "
+            << ((currentPlayer == 'X') ? xTurns : oTurns) << " turns!\n";
+            if (currentPlayer == 'X') xWins++; else oWins++;
+            gameOver = true; // end game
+        } else if (isDraw(board)) {
+            cout << "Its a draw!\n";
+            gameOver = true; // end game
         } else {
             currentPlayer = (currentPlayer == 'X') ? 'O' : 'X'; // Switch players
         }
     }
+    displayScore(xWins, oWins); // display current win count
+}
+
+int main() {
+    int xWins = 0, oWins = 0;
+    bool playAgain = true;
+
+    // Game loop
+    while (playAgain) {
+        playGame(xWins, oWins);
+        playAgain = askPlayAgain();
+    }
+
+    cout << "\nFinal Scores:";
+    displayScore(xWins, oWins); // final win count
+    cout << "Quitting...\n";
     return 0;
 }
+
